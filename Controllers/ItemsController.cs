@@ -29,7 +29,7 @@ namespace api.Controllers
     {
       _Context.Add(item);
       await _Context.SaveChangesAsync();
-      return Ok(item);
+      return Created("api/Items", item);
     }
 
     [HttpDelete("{id}")]
