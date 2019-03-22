@@ -11,9 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
-using api.Models;
+using MarketOrganizer.Data.Models;
 
-namespace api
+namespace MarketOrganizer.Api
 {
   public class Startup
   {
