@@ -17,7 +17,7 @@ If you are using the C# Extension in VsCode (or using Full Visual Studio) press 
 Change to Api Directory
 ```
 D:\github\MarketOrganizer> cd MarketOrganizer.Api
-D:\github\MarketOrganizer\MarketOrganizer.Api> dotnet ef migrate create MyMigration -p ../MarketOrganizer.Data
+D:\github\MarketOrganizer\MarketOrganizer.Api> dotnet ef migrations add MyMigration -p ../MarketOrganizer.Data
 ```
 
 ## Update Database
