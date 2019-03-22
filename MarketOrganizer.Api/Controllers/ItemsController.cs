@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketOrganizer.Api.Interfaces;
+using MarketOrganizer.Api.Services;
 using MarketOrganizer.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,47 +13,53 @@ namespace MarketOrganizer.Api.Controllers
   [ApiController]
   public class ItemsController : ControllerBase
   {
-    private readonly ItemsContext _Context;
+    private readonly IMarketService<Item> _itemService;
 
-    public ItemsController(ItemsContext _context)
+    public ItemsController(IMarketService<Item> itemService)
     {
-      _Context = _context;
+      _itemService = itemService;
     }
+
     [HttpGet]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-      var items = _Context.Item.ToList();
+      var items = await _itemService.Find();
       return Ok(items);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(Items item)
+    public async Task<IActionResult> Post(Item item)
     {
-      _Context.Add(item);
-      await _Context.SaveChangesAsync();
-      return Created("api/Items", item);
+      var result = await _itemService.Create(item);
+      if (result)
+      {
+        return Created("api/Items", item);
+      }
+      return BadRequest();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-      Items itemToRemove = _Context.Item.SingleOrDefault(x => x.Id == id);
+      Item itemToRemove = await _itemService.FindOne(id);
       if (itemToRemove != null)
       {
-        _Context.Item.Remove(itemToRemove);
-        await _Context.SaveChangesAsync();
-        return Ok();
+        await _itemService.Destroy(itemToRemove);
+        return NoContent();
       }
       return NotFound("Item not found");
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(Items item)
+    public async Task<IActionResult> Update(Item item)
     {
       if (item == null) return NotFound("Item not found");
-      _Context.Entry(item).State = EntityState.Modified;
-      await _Context.SaveChangesAsync();
-      return Ok(item);
+      var result = await _itemService.Update(item);
+      if (result)
+      {
+        return Ok(item);
+      }
+      return BadRequest();
     }
 
   }
