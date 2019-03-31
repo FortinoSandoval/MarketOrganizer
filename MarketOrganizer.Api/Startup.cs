@@ -28,6 +28,7 @@ namespace MarketOrganizer.Api
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+      services.AddCors();
       services.AddDbContext<ItemsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbString")));
     }
 
@@ -44,6 +45,7 @@ namespace MarketOrganizer.Api
       }
 
       app.UseHttpsRedirection();
+      app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
       app.UseMvc();
     }
   }
