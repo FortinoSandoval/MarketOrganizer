@@ -30,6 +30,7 @@ namespace MarketOrganizer.Api
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddScoped<IMarketService<Item>, ItemService>();
+      services.AddScoped<IAuthService<User>, AuthService>();
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
       services.AddCors();
       services.AddDbContext<ItemsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbString")));
