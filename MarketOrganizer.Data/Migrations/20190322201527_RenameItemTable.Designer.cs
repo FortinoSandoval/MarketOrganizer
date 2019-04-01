@@ -3,14 +3,16 @@ using MarketOrganizer.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MarketOrganizer.Data.Migrations
 {
     [DbContext(typeof(ItemsContext))]
-    partial class ItemsContextModelSnapshot : ModelSnapshot
+    [Migration("20190322201527_RenameItemTable")]
+    partial class RenameItemTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,13 +26,13 @@ namespace MarketOrganizer.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("BuyPrice");
+                    b.Property<int>("BuyPrice");
 
-                    b.Property<decimal>("HighestMarketPrice");
+                    b.Property<int>("HighestMarketPrice");
 
                     b.Property<string>("ItemName");
 
-                    b.Property<decimal>("SellPrice");
+                    b.Property<int>("SellPrice");
 
                     b.HasKey("Id");
 

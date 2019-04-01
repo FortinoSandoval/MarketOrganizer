@@ -6,6 +6,6 @@ namespace MarketOrganizer.Data.Models
   {
     public ItemsContext(DbContextOptions<ItemsContext> options) : base(options) { }
 
-    public DbSet<Items> Item { get; set; }
+    public DbSet<Item> Items { get; set; }
   }
 }
