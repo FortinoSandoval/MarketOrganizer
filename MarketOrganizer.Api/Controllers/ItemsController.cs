@@ -27,6 +27,13 @@ namespace MarketOrganizer.Api.Controllers
       return Ok(items);
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(int id)
+    {
+      var item = await _itemService.FindOne(id);
+      return Ok(item);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post(Item item)
     {
