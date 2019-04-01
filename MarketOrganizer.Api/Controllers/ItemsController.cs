@@ -31,7 +31,10 @@ namespace MarketOrganizer.Api.Controllers
     public async Task<IActionResult> Get(int id)
     {
       var item = await _itemService.FindOne(id);
-      return Ok(item);
+      if (item != null) {
+        return Ok(item);
+      }
+      return NotFound("Item not found");
     }
 
     [HttpPost]
