@@ -14,6 +14,10 @@ using Microsoft.EntityFrameworkCore;
 using MarketOrganizer.Data.Models;
 using MarketOrganizer.Api.Interfaces;
 using MarketOrganizer.Api.Services;
+using MarketOrganizer.Api.Helpers;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MarketOrganizer.Api
 {
@@ -29,9 +33,33 @@ namespace MarketOrganizer.Api
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddScoped<IMarketService<Item>, ItemService>();
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
       services.AddCors();
+
+      var appSettingsSection = Configuration.GetSection("AppSettings");
+      services.Configure<AppSettings>(appSettingsSection);
+
+      var appSettings = appSettingsSection.Get<AppSettings>();
+      var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+      services.AddAuthentication(x =>
+      {
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+      }).AddJwtBearer(x =>
+      {
+        x.RequireHttpsMetadata = false;
+        x.SaveToken = true;
+        x.TokenValidationParameters = new TokenValidationParameters
+        {
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(key),
+          ValidateIssuer = false,
+          ValidateAudience = false,
+          ValidateLifetime = true
+        };
+      });
+      services.AddScoped<IMarketService<Item>, ItemService>();
+      services.AddScoped<IAuthService<User>, AuthService>();
       services.AddDbContext<ItemsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbString")));
     }
 
@@ -49,6 +77,7 @@ namespace MarketOrganizer.Api
 
       app.UseHttpsRedirection();
       app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+      app.UseAuthentication();
       app.UseMvc();
     }
   }
