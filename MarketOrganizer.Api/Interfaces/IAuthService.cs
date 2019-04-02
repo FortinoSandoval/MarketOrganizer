@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MarketOrganizer.Data.Models;
 
 namespace MarketOrganizer.Api.Interfaces
 {
@@ -7,6 +8,6 @@ namespace MarketOrganizer.Api.Interfaces
   {
     Task<bool> Register(T user);
     Task<bool> UserExists(string username);
-    // string Login(string username, string password);
+    User Login(string username, string password);
   }
 }

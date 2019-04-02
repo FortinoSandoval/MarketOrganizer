@@ -3,13 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using MarketOrganizer.Api.Interfaces;
 using MarketOrganizer.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace MarketOrganizer.Api.Controllers
 {
-  [Route("api/[controller]")]
   [ApiController]
+  [Route("api/[controller]")]
   public class UsersController : ControllerBase
   {
     private readonly IAuthService<User> _userService;
@@ -33,6 +34,19 @@ namespace MarketOrganizer.Api.Controllers
         return Created("api/Users", user);
       }
       return BadRequest();
+    }
+
+    [HttpPost("authenticate")]
+    public IActionResult Authenticate(User user)
+    {
+      var userAuth = _userService.Login(user.Username, user.Password);
+
+      if (user == null)
+      {
+        return BadRequest("Invalid Username/Password");
+      }
+
+      return Ok(userAuth);
     }
   }
 }

@@ -4,13 +4,15 @@ using System.Threading.Tasks;
 using MarketOrganizer.Api.Interfaces;
 using MarketOrganizer.Api.Services;
 using MarketOrganizer.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace MarketOrganizer.Api.Controllers
 {
-  [Route("api/[controller]")]
+  [Authorize]
   [ApiController]
+  [Route("api/[controller]")]
   public class ItemsController : ControllerBase
   {
     private readonly IMarketService<Item> _itemService;
@@ -31,7 +33,8 @@ namespace MarketOrganizer.Api.Controllers
     public async Task<IActionResult> Get(int id)
     {
       var item = await _itemService.FindOne(id);
-      if (item != null) {
+      if (item != null)
+      {
         return Ok(item);
       }
       return NotFound("Item not found");
