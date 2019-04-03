@@ -41,7 +41,7 @@ namespace MarketOrganizer.Api.Controllers
     {
       var userAuth = _userService.Login(user.Username, user.Password);
 
-      if (user == null)
+      if (userAuth == null)
       {
         return BadRequest("Invalid Username/Password");
       }
