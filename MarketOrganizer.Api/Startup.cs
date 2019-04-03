@@ -18,6 +18,7 @@ using MarketOrganizer.Api.Helpers;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication;
 
 namespace MarketOrganizer.Api
 {
@@ -38,29 +39,40 @@ namespace MarketOrganizer.Api
 
       var appSettingsSection = Configuration.GetSection("AppSettings");
       services.Configure<AppSettings>(appSettingsSection);
-
       var appSettings = appSettingsSection.Get<AppSettings>();
-      var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-      services.AddAuthentication(x =>
-      {
-        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-      }).AddJwtBearer(x =>
-      {
-        x.RequireHttpsMetadata = false;
-        x.SaveToken = true;
-        x.TokenValidationParameters = new TokenValidationParameters
+      var secretKey = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+      ConfigureAuth(services, secretKey);
+      services.AddScoped<IMarketService<Item>, ItemService>()
+        .AddScoped<IMarketService<Cart>, CartService>()
+        .AddScoped<IMarketService<SoldItem>, SoldItemService>()
+        .AddScoped<IMarketService<Store>, StoreService>()
+        .AddScoped<IMarketService<StoreItem>, StoreItemService>()
+        .AddScoped<IAuthService<User>, AuthService>()
+        .AddDbContext<ItemsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbString")));
+    }
+
+    private Action<AuthenticationOptions> addAuthConfig = x =>
         {
-          ValidateIssuerSigningKey = true,
-          IssuerSigningKey = new SymmetricSecurityKey(key),
-          ValidateIssuer = false,
-          ValidateAudience = false,
-          ValidateLifetime = true
+          x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+          x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         };
-      });
-      services.AddScoped<IMarketService<Item>, ItemService>();
-      services.AddScoped<IAuthService<User>, AuthService>();
-      services.AddDbContext<ItemsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbString")));
+
+    private void ConfigureAuth(IServiceCollection services, byte[] key)
+    {
+      services.AddAuthentication(addAuthConfig).AddJwtBearer(x =>
+       {
+         x.RequireHttpsMetadata = false;
+         x.SaveToken = true;
+         x.TokenValidationParameters = new TokenValidationParameters
+         {
+           ValidateIssuerSigningKey = true,
+           IssuerSigningKey = new SymmetricSecurityKey(key),
+           ValidateIssuer = false,
+           ValidateAudience = false,
+           ValidateLifetime = true
+         };
+       });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
