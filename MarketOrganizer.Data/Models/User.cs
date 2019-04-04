@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace MarketOrganizer.Data.Models
 {
   ///
@@ -13,5 +15,7 @@ namespace MarketOrganizer.Data.Models
     public string Username { get; set; }
     public string Password { get; set; }
     public string Token { get; set; }
+
+    public List<Item> Items { get; set; }
   }
 }
